@@ -8,7 +8,7 @@
     :copyright: (c) 2013 by Janne Vanhala.
     :license: BSD, see LICENSE for more details.
 """
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 import hashlib
 import hmac
@@ -260,6 +260,7 @@ class Checkout(object):
                   params["ADDRESS"], params["POSTCODE"], params["POSTOFFICE"], merchant_secret]
 
         base = '+'.join(fields)
+        base = base.encode("utf-8")
         return hashlib.md5(base).hexdigest().upper()
 
     def validate_payment_return(self, mac, version, order_number, order_reference, payment, status, algorithm):
@@ -285,5 +286,6 @@ class Checkout(object):
             GET parameter 'ALGORITHM'.
         """
         fields = [version, order_number, order_reference, payment, status, algorithm]
-        base = '&'.join(fields)
-        return mac == hmac.new(self.merchant_secret, base, hashlib.sha256).hexdigest().upper()
+        base = base.encode("utf-8")
+        merchant_secret = bytes(self.merchant_secret , 'utf-8')
+        return mac == hmac.new(merchant_secret, base, hashlib.sha256).hexdigest().upper()
