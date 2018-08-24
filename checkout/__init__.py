@@ -286,6 +286,7 @@ class Checkout(object):
             GET parameter 'ALGORITHM'.
         """
         fields = [version, order_number, order_reference, payment, status, algorithm]
-        base = base.encode("utf-8")
         merchant_secret = bytes(self.merchant_secret , 'utf-8')
+        base = '&'.join(fields)
+        base = base.encode("utf-8")
         return mac == hmac.new(merchant_secret, base, hashlib.sha256).hexdigest().upper()
